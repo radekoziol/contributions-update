@@ -2,52 +2,63 @@
 
 USERNAME=""
 PASSWORD=""
-ACCESS_TOKEN="?"
-TYPE="ALL"
+ACCESS_TOKEN=""
+TYPE=""
 
-partition=$((8))
-partitionn=$(((29) + ${#USERNAME}))
- 
 
-curl 'https://api.github.com/user/repos?access_token=${ACCESS_TOKEN}&type=${TYPE}' 
-	| grep -e 'clone_url*' 
-	| cut -d \" -f 4 
-	|  while read -r line; do command 
-		curl "https://api.github.com/repos/${USERNAME}/${line:30:-4}/branches?access_token=${ACCESS_TOKEN}"
-			| grep -e 'name*' 
-			| cut -d \" -f 4 
-			| while read -r branch; do command
-				 git clone -b $branch ${line:0:${partition}}${USERNAME}:${PASSWORD}@github.com/${USERNAME}${line:${partitionn}} $branch$line; 
-			done;
+: '
+      https://github.com/username/reponame.git
+char: 0      8          20               -4
+'
+https_part=$((8))
+https_github_part=$((20 + ${#USERNAME}))
+dot_git_part=$((-4));
+function clone_all_repositories_branches () {
+
+    curl 'https://api.github.com/user/repos?access_token='${ACCESS_TOKEN}'&type=${TYPE}' |
+    grep -e 'clone_url*' |
+    cut -d \" -f 4 |
+    while read -r line; do command |
+        curl https://api.github.com/repos/${USERNAME}/${line:${https_github_part}:${dot_git_part}}/branches?access_token=${ACCESS_TOKEN} |
+        grep -e 'name*' |
+        cut -d \" -f 4 |
+        while read -r branch; do command |
+            git clone -b $branch  \
+                ${line:0:${https_part}}${USERNAME}:${PASSWORD}@github.com/${USERNAME}/${line:${https_github_part}} $branch-${line:${https_github_part}}; \
+	    done;
 	done;
+}
 
 
-BASE_DIR=eval pwd
+function process_each_branch_repository (){
 
-for d in */ ; do
-	echo "Processing $d"	
-	cp script2 $d
-	cd $d
+    cd tmp
+    for d in */ ; do
 
-	var=$(eval git rev-parse --is-inside-work-tree)
-	sleep 0.1
+        echo "Processing $d"
+        cd ${1}/tmp/${d}
 
-	while [[ $var != "true" ]]
-	do
-		for d2 in */ ; do
-			cd $d2
-		done
-		sleep 0.1
-		var=$(eval git rev-parse --is-inside-work-tree)
-	done
-	
-	cp $BASE_DIR/script2 .
-	eval ./script2
-	CUR_DIR=eval pwd
-	sleep 0.2
-	cd ..	
-	rm $CUR_DIR
-	cd $BASE_DIR
-done
+        var=$(eval git rev-parse --is-inside-work-tree && true)
+        while [[ $var != "true" ]]
+        do
+            for d2 in */ ; do
+                cd $d2
+            done
+            var=$(eval git rev-parse --is-inside-work-tree && true)
+        done
 
+        cp ${1}/script2.sh .
+        eval ./script2.sh && true
 
+    done
+}
+
+base_dir=$(eval pwd && true)
+
+mkdir tmp && cd tmp
+
+clone_all_repositories_branches
+cd ..
+process_each_branch_repository $(eval pwd && true)
+
+cd ${base_dir} && rm -rf tmp

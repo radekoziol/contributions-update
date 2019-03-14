@@ -21,6 +21,7 @@ fi
 
 USERNAME=""
 PASSWORD=""
+
 DIRECTORY=${PWD##*/} 
 
 git push --force --tags  https://${USERNAME}:${PASSWORD}@github.com/${USERNAME}/${DIRECTORY} 'refs/heads/*'
