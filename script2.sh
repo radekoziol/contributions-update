@@ -2,9 +2,9 @@
 
 git filter-branch --env-filter '
 
-OLD_EMAIL=""
-CORRECT_NAME=""
-CORRECT_EMAIL=""
+OLD_EMAIL="'${1}'"
+CORRECT_NAME="'${2}'"
+CORRECT_EMAIL="'${3}'"
 
 if [ "$GIT_COMMITTER_EMAIL" = "$OLD_EMAIL" ]
 then
@@ -19,10 +19,8 @@ fi
 ' --tag-name-filter cat -- --branches --tags
 
 
-USERNAME=""
-PASSWORD=""
-
-DIRECTORY=${PWD##*/} 
+USERNAME=${4}
+PASSWORD=${5}
+DIRECTORY=${PWD##*/}
 
 git push --force --tags  https://${USERNAME}:${PASSWORD}@github.com/${USERNAME}/${DIRECTORY} 'refs/heads/*'
-

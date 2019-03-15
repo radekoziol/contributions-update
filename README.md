@@ -8,18 +8,15 @@ _script.sh_ clones all your repositories with every branch, then applies _script
 
 ## parameters
 
-_script.sh_ 
 ```
 USERNAME
 PASSWORD
 ACCESS_TOKEN    // generate on /settings/tokens with at least repo scope
 TYPE            // private,public,all,owner 
-```
-
-_script2.sh_ 
-```
-USERNAME
-PASSWORD
 OLD_EMAIL
 CORRECT_NAME  
 CORRECT_EMAIL  
+```
+### notes
+Tested locally.
+Not working yet with repos your are not owner of

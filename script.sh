@@ -1,9 +1,33 @@
 #!/bin/bash
 
-USERNAME=""
-PASSWORD=""
-ACCESS_TOKEN=""
-TYPE=""
+
+function orangeEcho ()
+{
+  printf "\033[0;33m$1\033[0m"
+}
+
+orangeEcho "Username: "
+read USERNAME
+
+orangeEcho "Password: "
+read -s PASSWORD
+echo
+
+orangeEcho "Access Token: "
+read ACCESS_TOKEN
+
+orangeEcho "Type: "
+read TYPE
+
+orangeEcho "Old Email: "
+read OLD_EMAIL
+
+orangeEcho "Correct Email: "
+read CORRECT_EMAIL
+
+orangeEcho "Correct Name: "
+read CORRECT_NAME
+
 
 
 : '
@@ -18,13 +42,13 @@ function clone_all_repositories_branches () {
     curl 'https://api.github.com/user/repos?access_token='${ACCESS_TOKEN}'&type=${TYPE}' |
     grep -e 'clone_url*' |
     cut -d \" -f 4 |
-    while read -r line; do command |
-        curl https://api.github.com/repos/${USERNAME}/${line:${https_github_part}:${dot_git_part}}/branches?access_token=${ACCESS_TOKEN} |
+    while read -r clone_url; do command |
+        curl https://api.github.com/repos/${USERNAME}/${clone_url:${https_github_part}:${dot_git_part}}/branches?access_token=${ACCESS_TOKEN} |
         grep -e 'name*' |
         cut -d \" -f 4 |
         while read -r branch; do command |
             git clone -b $branch  \
-                ${line:0:${https_part}}${USERNAME}:${PASSWORD}@github.com/${USERNAME}/${line:${https_github_part}} $branch-${line:${https_github_part}}; \
+                ${clone_url:0:${https_part}}${USERNAME}:${PASSWORD}@github.com/${USERNAME}/${clone_url:${https_github_part}} $branch-${clone_url:${https_github_part}}; \
 	    done;
 	done;
 }
@@ -48,10 +72,13 @@ function process_each_branch_repository (){
         done
 
         cp ${1}/script2.sh .
-        eval ./script2.sh && true
+        eval ./script2.sh OLD_EMAIL CORRECT_NAME CORRECT_EMAIL USERNAME PASSWORD && true
 
     done
 }
+
+
+
 
 base_dir=$(eval pwd && true)
 
