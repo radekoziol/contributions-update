@@ -19,4 +19,4 @@ CORRECT_EMAIL
 ```
 ### notes
 Tested locally.
-Not working yet with repos your are not owner of
+Not working yet with your contributions in repos your are not owner or collaborator of

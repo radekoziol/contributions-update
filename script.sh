@@ -39,7 +39,7 @@ https_github_part=$((20 + ${#USERNAME}))
 dot_git_part=$((-4));
 function clone_all_repositories_branches () {
 
-    curl 'https://api.github.com/user/repos?access_token='${ACCESS_TOKEN}'&type=${TYPE}' |
+    curl 'https://api.github.com/user/repos?access_token='${ACCESS_TOKEN}'&type='${TYPE}'' |
     grep -e 'clone_url*' |
     cut -d \" -f 4 |
     while read -r clone_url; do command |
